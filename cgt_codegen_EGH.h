@@ -1,6 +1,6 @@
  //==============================================================
 /// \file       : cgt_codegen_EGH.h
-/// \brief Eppstein, Goodrich, Hirschberg, 
+/// \brief based on the construction by Eppstein, Goodrich, Hirschberg, 
 ///        "Improved Combinatorial Group Testing Algorithms for Real-World Problem Sizes"
  //--------------------------------------------------------------
 /// \author              Janos Tapolcai
@@ -102,7 +102,7 @@ private:
 			q++;
 			if (log_product>log_nd) break;
 		};	
-		log_msg(2)<<"Primes till Prod="<<exp(log_nd)<<" ("<<exp(log_product)<<") are generated:";	
+		log_msg(2)<<"The primes are ";	
 		if (logging_priority_level>=2){
 			for(Primlist::iterator itl=allprimes.begin();itl!=allprimes.end();++itl){
 				cout<<(*itl)<<", ";
@@ -146,7 +146,7 @@ private:
 	int q;   // first integer to test for primality
 	/// Improved Combinatorial Group Testing Algorithms for Real-World Problem Sizes
 	void EppsteinGoodrichHirschberg(){
-		log_msg(1)<<"Generating "<<d<<"-disjunct codes with n="<<n;		
+		log_msg(1)<<"Generating Eppstein Goodrich Hirschberg "<<d<<"-disjunct codes with n="<<n;		
 		allprimes.clear();
 		log_product=0;
 		sum=0;
@@ -155,14 +155,13 @@ private:
 		D.clear();
 		q=2;   // first integer to test for primality
 		generatePrimesTill(log_nd);		
-		log_msg(2)<<"multiplied together: "<<exp(log_product)<<" while the sum is "<<sum;
+		log_msg(2)<<"The primes multiplied together is "<<exp(log_product)<<", while their sum is "<<sum;
 		code_length=sum;
 		max_items=floor(exp(log_product/d));
 		int maxpow=allprimes[allprimes.size()-1];
 		int maxprime=allprimes[allprimes.size()-1];
 		min_items=ceil(exp((log_product-log(maxprime))/d));
-		log_msg(2)<<"max items:"<<max_items<<", min items:"<<min_items;				
-		log_msg(2)<<"maxpow: "<<(int)(log_nd/log((double)2)+0.5)<<" (last prim="<<maxprime<<")";
+		log_msg(3)<<"The same constuction is for universe of size ["<<min_items<<","<<max_items<<"] the last prime is "<<maxprime;
 		if(method == "genl"){
 			primes.clear();
 			for(Primlist::iterator itl=allprimes.begin();itl!=allprimes.end();++itl){

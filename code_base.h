@@ -156,6 +156,10 @@ class CodeBase{
 		   for(vector<int>::const_iterator it = t2.ones.begin(); it != t2.ones.end(); ++it) add((*it));
 		   length=t1.length;
 		};
+		friend std::ostream& operator<< (std::ostream &os, Code &code){
+			for(int i=0;i<code.length;i++) { if (code.has(i)) os<<"1"; else os<<"0";};
+			return os;
+		}
 	};
 	void convertCodes2Tests(const set<Code> & codes, int l){
 		reset();
@@ -261,8 +265,42 @@ public:
 		log_msg(0)<<"codes are verified";
 		return ret;
 	}
-	friend std::ostream& operator<< (std::ostream &os, Code &code){
-		for(int i=0;i<code.length;i++) { if (code.has(i)) os<<"1"; else os<<"0";};
+	/// write codes
+	friend std::ostream& operator<< (std::ostream &os, CodeBase &cgt){
+		int test_number = 0;
+		os << "bitnum m="<<cgt.code_length<< " size of universe n="<<cgt.max_items<<endl;
+		if (logging_priority_level<1) return os;
+		#ifdef HTML_LOG
+			os << "<br/>";
+		#endif
+		for(vector< Test >::iterator it = cgt.tests.begin();it != cgt.tests.end(); ++it){
+			++test_number;
+			os << "bit" << setw(2)<<setfill(' ') << test_number << ": ";
+			for(int i = 1; i <= cgt.max_items; ++i){
+				if(it->has(i)) os << 1;
+				else os << 0;
+				//if (i==cgt.n && cgt.method == "sep" && cgt.d==2) os <<" ";
+			}
+			#ifdef HTML_LOG
+			os << "<br/>";
+			#endif
+			os << endl;
+		}
+		/// or
+		//os <<endl<<"or"<<endl;
+		#ifdef HTML_LOG
+			os << "<br/>";
+		#endif
+		/*for(int i = 1; i <= cgt.max_items; ++i){
+			for(vector< Test >::iterator it = cgt.tests.begin();it != cgt.tests.end(); ++it){
+				if(it->has(i)) os << 1;
+				else os << 0;
+			}
+			#ifdef HTML_LOG
+			os << "<br/>";
+			#endif
+			os << endl;
+		}*/
 		return os;
 	}
 };

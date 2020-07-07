@@ -25,6 +25,7 @@
 #ifndef CGT_CODEGEN_EGH_DECODE_H
 #define CGT_CODEGEN_EGH_DECODE_H
 
+
 #include "code_base.h"
 #include "cgt_codegen_EGH.h"
 #include <iostream>
@@ -34,6 +35,8 @@
 #include <ttmath/ttmath.h>
 
 using namespace std;
+
+#define MSG_RECOMPILE "set COEFTYPE ttmath::Big<6,3> and BIGINT  ttmath::Int<7> to larger values in cgt_codegen_EGH_decode.h and recompile the c++ code"
 
 #define	 	COEFTYPE  		ttmath::Big<6,3>
 #define	 	BIGINT  		ttmath::Int<7>
@@ -389,7 +392,7 @@ class CgtCodegenEGHDecode : public CgtCodegenEGH {
 			if (its == MAXIT) {
 					error_msg<< "sbisect: overflow min "<<min<<" max "<<max
 						<<" diff "<<max - min<<" nroot "<<nroot<<" n1 "<<n1
-						<<" n2 "<<n2<<"\n";
+						<<" n2 "<<n2<<"\n"<<MSG_RECOMPILE;
 				roots[0] = mid;
 			}
 	
@@ -422,7 +425,7 @@ class CgtCodegenEGHDecode : public CgtCodegenEGH {
 		}
 	
 		if (its == MAXIT) {
-				error_msg << "sbisect: roots too close together";
+				error_msg << "sbisect: roots too close together"<<MSG_RECOMPILE;
 				log_msg(0) << "sbisect: overflow min "<<min<<" max "<<max
 						<<" diff "<<max - min<<" nroot "<<nroot<<" n1 "<<n1
 						<<" n2 "<<n2<<" atmin "<<atmin<<" atmid "<<atmid<<" atmax "<<atmax;
@@ -540,7 +543,7 @@ class CgtCodegenEGHDecode : public CgtCodegenEGH {
 			lfx = fx;
 		}
 	
-		error_msg << "modrf overflow "<<a<<" "<<b<<" "<<fx;
+		error_msg << "modrf overflow "<<a<<" "<<b<<" "<<fx<<MSG_RECOMPILE;
 	
 		return(0);
 	}
@@ -560,7 +563,6 @@ class CgtCodegenEGHDecode : public CgtCodegenEGH {
 		for (i = order; i >= 0; i--) 
 			sseq[0].coef[i]=f.coef[order-i];
 		//
-		log_msg(2)<<"Find root of Sturm sequence: order "<<order<<" np:"<<np;
 		string coeff_str="f(z)=";
 		for (i = order; i >= 0; i--){
 			log_msg(4)<<"coeff:"<<sseq[0].coef[i].ToString()<<"z^"<<i;
@@ -575,7 +577,7 @@ class CgtCodegenEGHDecode : public CgtCodegenEGH {
 			if (i>=2)
 				coeff_str+=+"z^"+to_string(i);
 		}
-		log_msg(2)<<coeff_str;
+		log_msg(2)<<"Find root of Sturm sequence "<<coeff_str;
 
 		np = buildsturm(order, sseq);
 
@@ -583,7 +585,7 @@ class CgtCodegenEGHDecode : public CgtCodegenEGH {
 			coeff_str="";
 			for (j = sseq[i].ord; j >= 0; j--)
 				coeff_str+= sseq[i].coef[j].ToString()+" ";
-			log_msg(2)<<coeff_str;
+			log_msg(3)<<coeff_str;
 		}
 	
 	
@@ -631,15 +633,15 @@ class CgtCodegenEGHDecode : public CgtCodegenEGH {
 		// write out the roots...
 
 		if (nroots == 1) {
-				log_msg(1)<<"1 distinct real root at x = "<<roots[0]<<endl;
+				log_msg(1)<<"1 distinct real root is found: "<<roots[0]<<endl;
 		} else {
 				coeff_str="";
 				for (i = 0; i != nroots; i++){
-					coeff_str+= roots[i].ToString()+" ";
+					coeff_str+= "\n"+roots[i].ToString();
 					int rr=floor(roots[i].ToFloat()+0.001);
 					res.push_back(rr);
 				}
-				log_msg(1)<<nroots<<" distinct real roots: " << coeff_str;
+				log_msg(1)<<nroots<<" distinct real roots are found: " << coeff_str;
 		}
 		return true;
 	} 
@@ -681,7 +683,7 @@ public:
 			}
 			y.push_back(uj);
 		}
-		log_msg(1)<<"Picked "<<ii<<" items randomly: "<<item_str;
+		log_msg(1)<<"We insert the following "<<ii<<" random items into EGH filter: "<<item_str;
 	}
 		
 	int decode(vector<vector<int> > y) {
@@ -703,8 +705,8 @@ public:
 		}
 		VI sigma;
 		sigma.push_back(A[0]);
-		log_msg(2)<<"sigma_1="<<A[0];
 		log_msg(2)<<"Generate elementary symetric polynomials";
+		log_msg(2)<<"sigma_1="<<A[0];
 		log_msg(3)<<"A_1="<<A[0];
 		for (int j=2; j<=d-1; j++){
 			BIGINT sigmaj=A[j-1];

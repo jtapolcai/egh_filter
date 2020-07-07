@@ -15,90 +15,81 @@ const bool LOG_MSG=true;
 
 int main(int argc, char** argv){
 	ArgParser ap(argc,argv); 
-	cout <<"Combinatorial Group Testing Constructions\n";
-	cout <<"For the details see:\n";
-	cout <<"[1]  D. Eppstein, M.T. Goodrich, and D. Hirschberg, Improved Combinatorial Group Testing Algorithms for Real-World Problem Sizes, SIAM Journal on Computing, 36,5 (2007) 1360-1375.\n";
-	ap//.boolOption("codes","Print the code matrix")
+	cout <<"EGH filter constructions\n";
+	cout <<"[1]  S. Z. Kiss, E. Hosszu, J. Tapolcai, L. Ronyai, and O. Rottenstreich, Bloom Filter with a False Positive Free Zone\n";
+	ap.intOption("n", "The size of the universe", 100)
+	  .intOption("d", "The number of items in the EGH filter", 2)
+	  .boolOption("codes","Print the items in the EGH filter as bitvectors")
 	  .boolOption("verify","Verify codes")
-	  .intOption("items", "Number of items", 10)
-	  .boolOption("fixd", "Generate a chart with fixed number of failures")
-	  .boolOption("fixn", "Generate a chart with fixed number of item")
-      .intOption("falsep", "Count the number of false positives",0)
-      .intOption("failnum", "Maximum number of failty items", 2)
-    .intOption("max_code_length", "Maximum code length", 200)
-	  .intOption("log","The logging level: 0 - results and errors only, 1 - min, 6 - max info",2) 
-	  .stringOption("comment","Comment on the simulation")
+	  .boolOption("fig_fixd", "Generate a chart with fixed number of failures (Fig 2)")
+	  .boolOption("fig_fixn", "Generate a chart with fixed number of item")
+	  .intOption("fixm", "Search n and d for a maximum code length", 200)
+	  .intOption("log","The logging level: 0 - results and errors only, 1 - min, 6 - max info",2)
+	  .stringOption("file_prefix","Prefix of the file the results are written")
 	  .run(); 
 	if (argc<=1) {
 		error_msg<<"Try "<<argv[0]<<" --help\n";
 		return 1;
 	}
 	int ll=ap["log"]; logging_priority_level=((unsigned) ll); 
-	string method = "genl";
-	int d=ap["failnum"];
-	int n=ap["items"];
-	if (ap.given("fixn") || ap.given("fixd")) {
-		string cm=ap["comment"];
-		string out_file_name="res/cgt_res_"+method+cm+".xml";
-		log_msg(1)<<"Saving results in xml " << out_file_name;
+	int d=ap["d"];
+	int n=ap["n"];
+	if (ap.given("fig_fixn") || ap.given("fig_fixd")) {
+		string out_file_name=((string)ap["file_prefix"])+"egh_filter.xml";
+		log_msg(1)<<"Saving results in file " << out_file_name;
 		ofstream os(out_file_name.c_str());
 		if (!os) {
 			error_msg<<"Error opening file "<<out_file_name;
-			exit (-1);                   // abnormal exit: error opening file
+			exit (-1);
 		}
-		os<<"<cgt>\n";
-		if (ap.given("fixd")){
+		os<<"<EGH_filter>\n";
+		if (ap.given("fig-fixd")){
 			int element=10;
 			int lenght_was=0;
-			os<<"\t<Desc>for_d="<<d<<"_"<<method<<"</Desc>\n";
 			do {
-				CgtCodegenEGH cgt(d, method);
+				CgtCodegenEGH cgt(d, "genl");
 				cgt.generate(element);
 				int max_items=cgt.max_items;
-				os<<"\t<Network>\n";
-				os<<"\t\t<Method>"<<d<<"_"<<method<<"</Method>\n";
-				os<<"\t\t<BitNum>"<<cgt.code_length<<"</BitNum>\n";
-				os<<"\t\t<ItemNum>"<<cgt.min_items<<"</ItemNum>\n";
-				os<<"\t</Network>\n";
-				os<<"\t<Network>\n";
-				os<<"\t\t<Method>"<<d<<"_"<<method<<"</Method>\n";
-				os<<"\t\t<BitNum>"<<cgt.code_length<<"</BitNum>\n";
-				os<<"\t\t<ItemNum>"<<max_items<<"</ItemNum>\n";
-				os<<"\t</Network>\n";
+				os<<"\t<code>\n";
+				os<<"\t\t<d>"<<d<<"</d>\n";
+				os<<"\t\t<m>"<<cgt.code_length<<"</m>\n";
+				os<<"\t\t<n>"<<cgt.min_items<<"</n>\n";
+				os<<"\t</code>\n";
+				os<<"\t<code>\n";
+				os<<"\t\t<d>"<<d<<"</d>\n";
+				os<<"\t\t<m>"<<cgt.code_length<<"</m>\n";
+				os<<"\t\t<n>"<<max_items<<"</n>\n";
+				os<<"\t</code>\n";
 				cgt.nextCodeLength();
 				if (element>=max_items) element++;
 				else element=max_items+1;
-				
 			} while (element<n);
 		}
-		if (ap.given("fixn")){
-			os<<"\t<Desc>for_"<<n<<"_items_"<<method<<"</Desc>\n";
+		if (ap.given("fig-fixn")){
 			for(int j=1;j<d;j++){
-				CgtCodegenEGH cgt(j, method);
+				CgtCodegenEGH cgt(j, "genl");
 				cgt.generate(n);
-				os<<"\t<Network>\n";
-				os<<"\t\t<Method>"<<d<<"_"<<method<<"</Method>\n";
-				os<<"\t\t<BitNum>"<<cgt.code_length<<"</BitNum>\n";
-				os<<"\t\t<ItemNum>"<<n<<"</ItemNum>\n";
-				os<<"\t\t<MaxItemNum>"<<cgt.max_items<<"</MaxItemNum>\n";
-				os<<"\t\t<FailNum>"<<j<<"</FailNum>\n";
-				os<<"\t</Network>\n";
+				os<<"\t<code>\n";
+				os<<"\t\t<d>"<<j<<"</d>\n";
+				os<<"\t\t<m>"<<cgt.code_length<<"</m>\n";
+				os<<"\t\t<n>"<<n<<"</n>\n";
+				os<<"\t</code>\n";
 				if (cgt.code_length>n) break;
 			}
 		}
-		os<<"</cgt>\n";
+		os<<"</EGH_filter>\n";
 		os.close();
 	} else {
-		CgtCodegenEGH cgt(d, method);
+		CgtCodegenEGH cgt(d, "genl");
 		Timer TR;
-        if (ap.given("max_code_length")){
-            int mm=ap["max_code_length"];
+        if (ap.given("fixm")){
+            int mm=ap["fixm"];
             long j=5;
             long maxj=1000000*mm;
-            log_msg(1)<<"start iterative search till "<<maxj<<" mm="<<mm;
+            log_msg(1)<<"Start iterative search till "<<maxj<<" mm="<<mm;
             for(;j<maxj;j++){
                 log_msg(1)<<"try n="<<j;
-                CgtCodegenEGH cgt_tmp(d, method);
+                CgtCodegenEGH cgt_tmp(d, "genl");
                 cgt_tmp.generate(j);
                 if (cgt_tmp.code_length>mm) {
                     n=cgt_tmp.min_items-1;
@@ -110,12 +101,11 @@ int main(int argc, char** argv){
             log_msg(1)<<"We set n="<<n<<" to get code length at most "<<mm;
         }
         cgt.generate(n);
-		//os << XML("FullRunningTime",TR.userTime());
-		log_msg(1) << TR.userTime();
-		log_msg(1)<<"code length "<<cgt.code_length;
-		//if (ap.given("codes" )) {
-		//	log_msg(0)<<cgt;
-		//}
+		log_msg(1) <<"runtime was "<< TR.userTime()<<" sec";
+		log_msg(1) <<"code length "<<cgt.code_length;
+		if (ap.given("codes" )) {
+			log_msg(1)<<cgt;
+		}
 		if (ap.given("verify")){
 			cgt.verify();
 		}
