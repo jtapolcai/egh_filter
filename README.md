@@ -7,7 +7,7 @@ To compile the c++ code type (Linux, Mac):
 ```
 make
 ```
-If the compilation is succesfull there are two executives `./generate_egh` and `./decode_egh`.
+If the compilation is successful there are two executives `./generate_egh` and `./decode_egh`.
 
 ### Generate EGH filter (`generate_egh`)
 
@@ -101,7 +101,7 @@ Demo of the EGH filter decoding algorithm
   [cgt_codegen_EGH.h:158] The primes multiplied together is 9.69969e+06, while their sum is 77
  [cgt_codegen_EGH_decode.h:686] We insert the following 2 random items into EGH filter: 807 249 
   [cgt_codegen_EGH_decode.h:690] Decoding started
-  [cgt_codegen_EGH_decode.h:708] Generate elementary symetric polynomials
+  [cgt_codegen_EGH_decode.h:708] Generate elementary symmetric polynomials
   [cgt_codegen_EGH_decode.h:709] sigma_1=1056
   [cgt_codegen_EGH_decode.h:738] sigma_2=200943
   [cgt_codegen_EGH_decode.h:580] Find root of Sturm sequence f(z)= z^2 -1056z +200943
