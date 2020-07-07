@@ -168,7 +168,7 @@ private:
 				for(int i = 0; i < *itl; ++i){
 					Test test;
 					for(int j = 1; j <= max_items; j++)
-						if(j%(*itl) == (i+1)%(*itl)) test.add(j);
+						if(j%(*itl) == (i)%(*itl)) test.add(j);
 					tests.push_back(test);
 				}
 				primes.push_back(*itl);
