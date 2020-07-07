@@ -705,7 +705,7 @@ public:
 		}
 		VI sigma;
 		sigma.push_back(A[0]);
-		log_msg(2)<<"Generate elementary symetric polynomials";
+		log_msg(2)<<"Generate elementary symmetric polynomials";
 		log_msg(2)<<"sigma_1="<<A[0];
 		log_msg(3)<<"A_1="<<A[0];
 		for (int j=2; j<=d-1; j++){
